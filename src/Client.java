@@ -42,8 +42,8 @@ public class Client {
 		
 		try 
 		{
-			System.out.println("IN: " + ip + "  " + port);
 			server = new Socket(ip,port);
+			System.out.println("IN: " + ip + "  " + port);
 			out = new ObjectOutputStream(server.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(server.getInputStream());
