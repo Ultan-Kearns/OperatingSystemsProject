@@ -45,18 +45,44 @@ public class Client {
 			out = new ObjectOutputStream(server.getOutputStream());
 			in = new ObjectInputStream(server.getInputStream());
 			System.out.println("Client Side ready to communicate");
-			//for some reason only getting intro message second time
+			// for some reason only getting intro message second time
+			message = (String) in.readObject();
+			System.out.println(message);
+			// intro showing twice minor error 
+			message = console.next();
+			sendMessage(message);
 			message = (String) in.readObject();
 			System.out.println(message);
 			while (true) {
-				//not getting past here
+				// msg from choice
+				if (message.equals("1")) {
+					// name
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					// id
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					// email
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					// dept
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+				}
+				// msg for intro
+				message = (String) in.readObject();
+				System.out.println(message);
+
 				message = console.next();
-				System.out.println(message);
 				sendMessage(message);
-				message = (String) in.readObject();
-				System.out.println(message);
-				message = (String) in.readObject();
-				System.out.println(message);
 			}
 		}
 
