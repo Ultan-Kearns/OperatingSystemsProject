@@ -42,24 +42,22 @@ public class Client {
 		try {
 			server = new Socket(ip, port);
 			System.out.println("IN: " + ip + "  " + port);
+			out = new ObjectOutputStream(server.getOutputStream());
+			in = new ObjectInputStream(server.getInputStream());
+			System.out.println("Client Side ready to communicate");
+			//for some reason only getting intro message second time
+			message = (String) in.readObject();
+			System.out.println(message);
 			while (true) {
-				System.out.println("IN");
-				out = new ObjectOutputStream(server.getOutputStream());
-				out.flush();
-				in = new ObjectInputStream(server.getInputStream());
-				System.out.println("Client Side ready to communicate");
-				message = (String) in.readObject();
-				System.out.println(message);
+				//not getting past here
 				message = console.next();
+				System.out.println(message);
 				sendMessage(message);
 				message = (String) in.readObject();
-				while (!message.equalsIgnoreCase("-12End")) {
-					System.out.println(message);
-
-					message = (String) in.readObject();
-				}
+				System.out.println(message);
+				message = (String) in.readObject();
+				System.out.println(message);
 			}
-
 		}
 
 		catch (IOException e) {
