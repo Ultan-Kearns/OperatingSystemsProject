@@ -13,64 +13,65 @@ public class Client {
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message;
-	public static void main(String[] args)
-	{
+
+	public static void main(String[] args) throws IOException {
 		Client client = new Client();
 		client.client();
 		client.clientapp();
 	}
+
 	public void client() {
 		System.out.print("Enter IP address: ");
 		ip = console.next();
 		System.out.print("Enter port number: ");
 		port = console.nextInt();
 	}
-	public void sendMessage(String msg)
-	{
-		try{
+
+	public void sendMessage(String msg) {
+		try {
 			out.writeObject(msg);
 			out.flush();
 			System.out.println("client>" + msg);
-		}
-		catch(IOException ioException){
+		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		}
 	}
 
-	public void clientapp()
-	{
-		
-		try 
-		{
-			server = new Socket(ip,port);
+	public void clientapp() throws IOException {
+
+		try {
+			server = new Socket(ip, port);
 			System.out.println("IN: " + ip + "  " + port);
-			out = new ObjectOutputStream(server.getOutputStream());
-			out.flush();
-			in = new ObjectInputStream(server.getInputStream());
-			System.out.println("Client Side ready to communicate");
-			message = (String)in.readObject();
-			System.out.println(message);
-			message = console.next();
-			sendMessage(message);
-			message = (String)in.readObject();
-			while(!message.equalsIgnoreCase("-12End"))
-			{
+			while (true) {
+				System.out.println("IN");
+				out = new ObjectOutputStream(server.getOutputStream());
+				out.flush();
+				in = new ObjectInputStream(server.getInputStream());
+				System.out.println("Client Side ready to communicate");
+				message = (String) in.readObject();
 				System.out.println(message);
-				
-				message = (String)in.readObject();
+				message = console.next();
+				sendMessage(message);
+				message = (String) in.readObject();
+				while (!message.equalsIgnoreCase("-12End")) {
+					System.out.println(message);
+
+					message = (String) in.readObject();
+				}
 			}
-			
-		} 
-		
+
+		}
+
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e) 
-		{
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			in.close();
+			out.close();
 		}
-		
+
 	}
 }
