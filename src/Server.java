@@ -1,12 +1,15 @@
 import java.awt.SecondaryLoop;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.*;
+import java.util.Scanner;
 
 public class Server {
 
@@ -65,17 +68,26 @@ class Connecthandler extends Thread {
 	public synchronized void writeUserFile(String name, String empId, String email, String department)
 			throws IOException {
 		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
-		String line;
-		BufferedReader fileRead = new BufferedReader(new FileReader(userFile));
-		FileWriter fw = new FileWriter(userFile);
-		System.out.println(fileRead.readLine());
-		while ((line = fileRead.readLine()) != null) {
-			System.out.println("IN LOOP " + line);
+		// buffered reader caused issur
+		 BufferedReader br = new BufferedReader(new FileReader(userFile));
+		String line = br.readLine();
+		System.out.println(line);
+		PrintWriter fw = new PrintWriter(new FileOutputStream(userFile),true);
+		if(line == null)
+		{
+			System.out.println("IN IF");
+			fw.println(name + " " + empId + " " + email + " " + department);
 		}
-		fw.write(name + " " + empId + " " + email + " " + department);
+		while(line != null)
+		{
+			System.out.println("IN LOOP");
+			fw.println(line);
+			line = br.readLine();
+		}
+		fw.println(name + " " + empId + " " + email + " " + department);
 		fw.flush();
 		fw.close();
-		fileRead.close();
+		br.close();
 	}
 
 	public synchronized void registerUser() throws ClassNotFoundException, IOException {
