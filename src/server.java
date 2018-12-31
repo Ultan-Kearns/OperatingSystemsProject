@@ -89,7 +89,30 @@ class Connecthandler extends Thread {
 		fw.close();
 		br.close();
 	}
-	
+	public synchronized void writeBugFile(String appName, String dateTime, String platform, String description,  String status)
+			throws IOException {
+		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+		// buffered reader caused issur
+		 BufferedReader br = new BufferedReader(new FileReader(bugFile));
+		String line = br.readLine();
+		System.out.println(line);
+		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile),true);
+		if(line == null)
+		{
+			System.out.println("IN IF");
+			fw.println(appName + " " + dateTime + " " + platform + " " + description + " " + status);
+		}
+		while(line != null)
+		{
+			System.out.println("IN LOOP");
+			fw.println(line);
+			line = br.readLine();
+		}
+		fw.println(appName + " " + dateTime + " " + platform + " " + description + " " + status);
+		fw.flush();
+		fw.close();
+		br.close();
+	}
 	public synchronized void registerUser() throws ClassNotFoundException, IOException {
 		String name, employeeId, email, department;
 		// check to if user file created;
@@ -102,7 +125,21 @@ class Connecthandler extends Thread {
 		sendMessage("Please enter Department: ");
 		department = (String) in.readObject();
 		System.out.println(name + " " + employeeId + " " + email + " " + department);
-		writeUserFile(name, employeeId, email, department);
+writeUserFile(name, employeeId, email, department);
+	}
+	public synchronized void registerBug() throws ClassNotFoundException, IOException {
+		String appName, dateTime, platform, description, status;
+		sendMessage("Please enter application name: ");
+		appName = (String) in.readObject();
+		sendMessage("Please enter date time: ");
+		dateTime = (String) in.readObject();
+		sendMessage("Please enter platform: ");
+		platform = (String) in.readObject();
+		sendMessage("Please enter description: ");
+		description = (String) in.readObject();
+		sendMessage("Please enter status: ");
+		status = (String) in.readObject();
+		writeBugFile(appName, dateTime, platform, description, status);
 	}
 	public synchronized String login(String name, String empId, String email, String department ) throws IOException
 	{
