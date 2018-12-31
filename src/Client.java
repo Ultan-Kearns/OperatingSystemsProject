@@ -75,6 +75,8 @@ public class Client {
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
+					message = (String) in.readObject();
+					System.out.println(message);
 				}
 				else if(message.equals("2"))
 				{

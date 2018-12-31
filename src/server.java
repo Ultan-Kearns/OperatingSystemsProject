@@ -134,7 +134,16 @@ class Connecthandler extends Thread {
 		sendMessage("Please enter Department: ");
 		department = (String) in.readObject();
 		System.out.println(name + " " + employeeId + " " + email + " " + department);
-writeUserFile(name, employeeId, email, department);
+		String unique = userUnique(employeeId, email);
+		System.out.println(unique);
+		if(unique.equals("0"))
+		{
+			sendMessage("User not created Email and ID must be unique");
+		}
+		else {
+			sendMessage("Unique ID + email detected writing user to file");
+		writeUserFile(name, employeeId, email, department);
+		}
 	}
 	public synchronized void registerBug() throws ClassNotFoundException, IOException {
 		String appName, dateTime, platform, description, status;
@@ -174,6 +183,31 @@ writeUserFile(name, employeeId, email, department);
 		}
 		sendMessage("Info incorrect");
 		return "0";
+	}
+	public synchronized String userUnique(String empId, String email) throws IOException
+	{
+		String user, empUnique,emailUnique,dept;
+		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
+		Scanner scan = new Scanner(userFile);
+		//if file is null
+		if(scan.hasNext() == false)
+		{
+			return "1";
+		}
+		while(scan.hasNext() != false)
+		{ 
+			user = scan.next();
+			empUnique = scan.next();
+			emailUnique = scan.next();
+			dept = scan.next();
+			if(empUnique.equalsIgnoreCase(empId) || emailUnique.equalsIgnoreCase(email) && scan.hasNext() == false)
+			{
+				return "0";
+			}
+			scan.nextLine();
+			
+		}
+		return "1";
 	}
 	public void run() {
 
