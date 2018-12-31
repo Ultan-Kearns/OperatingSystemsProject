@@ -44,6 +44,7 @@ public class Client {
 			System.out.println("IN: " + ip + "  " + port);
 			out = new ObjectOutputStream(server.getOutputStream());
 			in = new ObjectInputStream(server.getInputStream());
+			String login = "";
 			System.out.println("Client Side ready to communicate");
 			// for some reason only getting intro message second time
 			message = (String) in.readObject();
@@ -51,8 +52,6 @@ public class Client {
 			// intro showing twice minor error 
 			message = console.next();
 			sendMessage(message);
-			message = (String) in.readObject();
-			System.out.println(message);
 			while (true) {
 				// msg from choice
 				if (message.equals("1")) {
@@ -77,10 +76,41 @@ public class Client {
 					message = console.next();
 					sendMessage(message);
 				}
+				else if(message.equals("2"))
+				{
+					//name
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					//empID
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					//email
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					//department
+					message = (String) in.readObject();
+					System.out.println(message);
+					message = console.next();
+					sendMessage(message);
+					//logon messsage
+					message = (String) in.readObject();
+					System.out.println(message);
+					login = (String) in.readObject();
+				}
 				// msg for intro
 				message = (String) in.readObject();
 				System.out.println(message);
-
+				if(login.equals("1"))
+				{
+					message = (String) in.readObject();
+					System.out.println(message);
+				}
 				message = console.next();
 				sendMessage(message);
 			}

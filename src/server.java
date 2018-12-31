@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.Scanner;
 
-public class Server {
+public class server {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -89,7 +89,7 @@ class Connecthandler extends Thread {
 		fw.close();
 		br.close();
 	}
-
+	
 	public synchronized void registerUser() throws ClassNotFoundException, IOException {
 		String name, employeeId, email, department;
 		// check to if user file created;
@@ -104,33 +104,66 @@ class Connecthandler extends Thread {
 		System.out.println(name + " " + employeeId + " " + email + " " + department);
 		writeUserFile(name, employeeId, email, department);
 	}
-
+	public synchronized String login(String name, String empId, String email, String department ) throws IOException
+	{
+		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
+		 BufferedReader br = new BufferedReader(new FileReader(userFile));
+		String line = br.readLine();
+		String check = name + " " + empId + " " + email + " " + department;
+		System.out.println(line);
+		//if file is null
+		if(line == null)
+		{
+			sendMessage("NO USERS FOUND PLEASE REGISTER");
+			return "0";
+		}
+		while(line != null)
+		{ 
+			if(line.equals(check))
+			{
+				sendMessage("logged in");
+				return "1";
+			}
+			line = br.readLine();
+		}
+		sendMessage("Info incorrect");
+		return "0";
+	}
 	public void run() {
 
 		try {
 			out = new ObjectOutputStream(individualconnection.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(individualconnection.getInputStream());
+			String login = "";
 			System.out.println("Connection" + socketid + " from IP address " + individualconnection.getInetAddress());
 			sendMessage("Press 1 for register\npress 2 for login");
+			message = (String) in.readObject();
 			while (true) {
-
-				sendMessage("Press 1 for register\npress 2 for login");
-				message = (String) in.readObject();
-				// set login in class getLogin?
-				int login = 0;
-				if (login == 1) {
-					sendMessage(
-							"Press 3 for add bug report\nPress 4 for assign bug report\npress 5 to view all unassigned bugs\npress 6 to view all bugs in system\npress 7 to update bug info");
-				}
 				if (message.equals("1")) {
 					registerUser();
 					out.flush();
 				} else if (message.equals("2")) {
-					sendMessage("test user....");
+					String name, empId, email, department;
+					sendMessage("Enter name");
+				    name = (String) in.readObject();
+					sendMessage("Enter employee id");
+				    empId = (String) in.readObject();
+					sendMessage("Enter email");
+				    email = (String) in.readObject();
+					sendMessage("Enter department");
+				    department = (String) in.readObject();
+					login = login(name, empId, email, department);
+					System.out.println(login);
+					sendMessage(login);
 				}
-				System.out.println("THIS IS MSG " + message);
-				// REad the files and send the line to the clieny
+				sendMessage("Press 1 for register\npress 2 for login");
+				// set login in class getLogin?
+				if (login.equals("1")) {
+					sendMessage(
+							"Press 3 for add bug report\nPress 4 for assign bug report\npress 5 to view all unassigned bugs\npress 6 to view all bugs in system\npress 7 to update bug info");
+				}
+				message = (String) in.readObject();
 			}
 		}
 
