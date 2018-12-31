@@ -78,6 +78,7 @@ class Connecthandler extends Thread {
 			System.out.println("IN IF");
 			fw.println(name + " " + empId + " " + email + " " + department);
 		}
+		else {
 		while(line != null)
 		{
 			System.out.println("IN LOOP");
@@ -85,6 +86,7 @@ class Connecthandler extends Thread {
 			line = br.readLine();
 		}
 		fw.println(name + " " + empId + " " + email + " " + department);
+		}
 		fw.flush();
 		fw.close();
 		br.close();
@@ -94,21 +96,28 @@ class Connecthandler extends Thread {
 		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
 		// buffered reader caused issur
 		 BufferedReader br = new BufferedReader(new FileReader(bugFile));
-		String line = br.readLine();
+		int counter = 0;
+		String line = br.readLine();	
 		System.out.println(line);
 		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile),true);
 		if(line == null)
 		{
+			counter = 1;
 			System.out.println("IN IF");
-			fw.println(appName + " " + dateTime + " " + platform + " " + description + " " + status);
+			fw.println(counter + ". " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
 		}
+		else {
+			//since first line is already proven to exist
+			counter = 1;
 		while(line != null)
 		{
+			counter += 1;
 			System.out.println("IN LOOP");
 			fw.println(line);
 			line = br.readLine();
 		}
-		fw.println(appName + " " + dateTime + " " + platform + " " + description + " " + status);
+		fw.println(counter + ". " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
+		}
 		fw.flush();
 		fw.close();
 		br.close();
@@ -193,6 +202,9 @@ writeUserFile(name, employeeId, email, department);
 					login = login(name, empId, email, department);
 					System.out.println(login);
 					sendMessage(login);
+				} else if (message.equals("3"))
+				{
+					registerBug();
 				}
 				sendMessage("Press 1 for register\npress 2 for login");
 				// set login in class getLogin?
