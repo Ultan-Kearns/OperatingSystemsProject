@@ -138,17 +138,36 @@ public class Client {
 							&& !message.equalsIgnoreCase("Closed"));
 					sendMessage(message);
 				} else if (message.equals("4")) {
+					// bug id
+					message = (String) in.readObject();
+					System.out.println(message);
+					String bug = console.next();
+					// added dot as separator
+					bug = bug + ".";
+					sendMessage(bug);
+					// employee id
+					message = (String) in.readObject();
+					System.out.println(message);
+					String empId = console.next();
+					sendMessage(empId);
+					message = (String) in.readObject();
+					System.out.println(message);
 
 				} else if (message.equals("5")) {
 
 				} else if (message.equals("6")) {
-					String check = (String) in.readObject();
-					int total = Integer.parseInt(check);
-					if (total > 0) {
-						for (int i = 0; i < total; i++) {
-							message = (String) in.readObject();
-							System.out.println(message);
+					message = (String) in.readObject();
+					if (!message.equalsIgnoreCase("no bugs in file")) {
+						String check = message;
+						int total = Integer.parseInt(check);
+						if (total > 0) {
+							for (int i = 0; i < total; i++) {
+								message = (String) in.readObject();
+								System.out.println(message);
+							}
 						}
+					} else {
+						System.out.println(message);
 					}
 				}
 				// msg for intro

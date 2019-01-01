@@ -229,7 +229,7 @@ class Connecthandler extends Thread {
 		return counter;
 	}
 
-	public void run() {
+	public synchronized void run() {
 
 		try {
 			out = new ObjectOutputStream(individualconnection.getOutputStream());
