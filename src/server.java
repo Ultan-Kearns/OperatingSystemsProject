@@ -1,6 +1,7 @@
 import java.awt.SecondaryLoop;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -49,7 +50,6 @@ class Connecthandler extends Thread {
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	String message;
-
 	public Connecthandler(Socket s, int i) {
 		individualconnection = s;
 		socketid = i;
@@ -69,59 +69,55 @@ class Connecthandler extends Thread {
 			throws IOException {
 		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
 		// buffered reader caused issur
-		 BufferedReader br = new BufferedReader(new FileReader(userFile));
+		BufferedReader br = new BufferedReader(new FileReader(userFile));
 		String line = br.readLine();
 		System.out.println(line);
-		PrintWriter fw = new PrintWriter(new FileOutputStream(userFile),true);
-		if(line == null)
-		{
+		PrintWriter fw = new PrintWriter(new FileOutputStream(userFile), true);
+		if (line == null) {
 			System.out.println("IN IF");
 			fw.println(name + " " + empId + " " + email + " " + department);
-		}
-		else {
-		while(line != null)
-		{
-			System.out.println("IN LOOP");
-			fw.println(line);
-			line = br.readLine();
-		}
-		fw.println(name + " " + empId + " " + email + " " + department);
+		} else {
+			while (line != null) {
+				System.out.println("IN LOOP");
+				fw.println(line);
+				line = br.readLine();
+			}
+			fw.println(name + " " + empId + " " + email + " " + department);
 		}
 		fw.flush();
 		fw.close();
 		br.close();
 	}
-	public synchronized void writeBugFile(String appName, String dateTime, String platform, String description,  String status)
-			throws IOException {
+
+	public synchronized void writeBugFile(String appName, String dateTime, String platform, String description,
+			String status) throws IOException {
 		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
 		// buffered reader caused issur
-		 BufferedReader br = new BufferedReader(new FileReader(bugFile));
+		BufferedReader br = new BufferedReader(new FileReader(bugFile));
 		int counter = 0;
-		String line = br.readLine();	
+		String line = br.readLine();
 		System.out.println(line);
-		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile),true);
-		if(line == null)
-		{
+		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile), true);
+		if (line == null) {
 			counter = 1;
 			System.out.println("IN IF");
 			fw.println(counter + ". " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
-		}
-		else {
-			//since first line is already proven to exist
+		} else {
+			// since first line is already proven to exist
 			counter = 1;
-		while(line != null)
-		{
-			counter += 1;
-			System.out.println("IN LOOP");
-			fw.println(line);
-			line = br.readLine();
-		}
-		fw.println(counter + ". " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
+			while (line != null) {
+				counter += 1;
+				System.out.println("IN LOOP");
+				fw.println(line);
+				line = br.readLine();
+			}
+			fw.println(counter + ". " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
 		}
 		fw.flush();
 		fw.close();
 		br.close();
 	}
+
 	public synchronized void registerUser() throws ClassNotFoundException, IOException {
 		String name, employeeId, email, department;
 		// check to if user file created;
@@ -136,15 +132,14 @@ class Connecthandler extends Thread {
 		System.out.println(name + " " + employeeId + " " + email + " " + department);
 		String unique = userUnique(employeeId, email);
 		System.out.println(unique);
-		if(unique.equals("0"))
-		{
+		if (unique.equals("0")) {
 			sendMessage("User not created Email and ID must be unique");
-		}
-		else {
+		} else {
 			sendMessage("Unique ID + email detected writing user to file");
-		writeUserFile(name, employeeId, email, department);
+			writeUserFile(name, employeeId, email, department);
 		}
 	}
+
 	public synchronized void registerBug() throws ClassNotFoundException, IOException {
 		String appName, dateTime, platform, description, status;
 		sendMessage("Please enter application name: ");
@@ -159,23 +154,20 @@ class Connecthandler extends Thread {
 		status = (String) in.readObject();
 		writeBugFile(appName, dateTime, platform, description, status);
 	}
-	public synchronized String login(String name, String empId, String email, String department ) throws IOException
-	{
+
+	public synchronized String login(String name, String empId, String email, String department) throws IOException {
 		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
-		 BufferedReader br = new BufferedReader(new FileReader(userFile));
+		BufferedReader br = new BufferedReader(new FileReader(userFile));
 		String line = br.readLine();
 		String check = name + " " + empId + " " + email + " " + department;
 		System.out.println(line);
-		//if file is null
-		if(line == null)
-		{
+		// if file is null
+		if (line == null) {
 			sendMessage("NO USERS FOUND PLEASE REGISTER");
 			return "0";
 		}
-		while(line != null)
-		{ 
-			if(line.equals(check))
-			{
+		while (line != null) {
+			if (line.equals(check)) {
 				sendMessage("logged in");
 				return "1";
 			}
@@ -184,31 +176,59 @@ class Connecthandler extends Thread {
 		sendMessage("Info incorrect");
 		return "0";
 	}
-	public synchronized String userUnique(String empId, String email) throws IOException
-	{
-		String user, empUnique,emailUnique,dept;
+
+	public synchronized String userUnique(String empId, String email) throws IOException {
+		String user, empUnique, emailUnique, dept;
 		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
 		Scanner scan = new Scanner(userFile);
-		//if file is null
-		if(scan.hasNext() == false)
-		{
+		// if file is null
+		if (scan.hasNext() == false) {
 			return "1";
 		}
-		while(scan.hasNext() != false)
-		{ 
+		while (scan.hasNext() != false) {
 			user = scan.next();
 			empUnique = scan.next();
 			emailUnique = scan.next();
 			dept = scan.next();
-			if(empUnique.equalsIgnoreCase(empId) || emailUnique.equalsIgnoreCase(email) && scan.hasNext() == false)
-			{
+			if (empUnique.equalsIgnoreCase(empId) || emailUnique.equalsIgnoreCase(email) && scan.hasNext() == false) {
 				return "0";
 			}
 			scan.nextLine();
-			
+
 		}
 		return "1";
 	}
+
+	public synchronized int readBugFile() throws IOException {
+		System.out.println("In READ");
+		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+		BufferedReader br = new BufferedReader(new FileReader(bugFile));
+		int counter = 0;
+		String line = br.readLine();
+		if (line == null) {
+			sendMessage("No bugs in file");
+		} else {
+			while (line != null) {
+				line = br.readLine();
+				counter += 1; 
+			}
+			String check = Integer.toString(counter);
+			sendMessage(check);
+		}	
+		br.close();
+		br = new BufferedReader(new FileReader(bugFile));
+		if(counter > 0) {
+			for(int i = 0; i < counter; i++)
+			{
+				line = br.readLine();
+				sendMessage(line);
+			}
+		}
+		br.close();
+		System.out.println("COUNTER: " + counter);
+		return counter;
+	}
+
 	public void run() {
 
 		try {
@@ -226,19 +246,34 @@ class Connecthandler extends Thread {
 				} else if (message.equals("2")) {
 					String name, empId, email, department;
 					sendMessage("Enter name");
-				    name = (String) in.readObject();
+					name = (String) in.readObject();
 					sendMessage("Enter employee id");
-				    empId = (String) in.readObject();
+					empId = (String) in.readObject();
 					sendMessage("Enter email");
-				    email = (String) in.readObject();
+					email = (String) in.readObject();
 					sendMessage("Enter department");
-				    department = (String) in.readObject();
+					department = (String) in.readObject();
 					login = login(name, empId, email, department);
 					System.out.println(login);
 					sendMessage(login);
-				} else if (message.equals("3"))
-				{
+				} else if (message.equals("3")) {
 					registerBug();
+				}
+				else if(message.equals("4"))
+				{
+					
+				}
+				else if(message.equals("5"))
+				{
+					
+				}
+				else if(message.equals("6"))
+				{
+					readBugFile();
+				}
+				else if(message.equals("7"))
+				{
+					
 				}
 				sendMessage("Press 1 for register\npress 2 for login");
 				// set login in class getLogin?
@@ -246,7 +281,7 @@ class Connecthandler extends Thread {
 					sendMessage(
 							"Press 3 for add bug report\nPress 4 for assign bug report\npress 5 to view all unassigned bugs\npress 6 to view all bugs in system\npress 7 to update bug info");
 				}
-				message = (String) in.readObject();
+			  message = (String) in.readObject();
 			}
 		}
 

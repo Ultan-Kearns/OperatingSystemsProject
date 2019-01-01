@@ -49,7 +49,7 @@ public class Client {
 			// for some reason only getting intro message second time
 			message = (String) in.readObject();
 			System.out.println(message);
-			// intro showing twice minor error 
+			// intro showing twice minor error
 			message = console.next();
 			sendMessage(message);
 			while (true) {
@@ -77,75 +77,84 @@ public class Client {
 					sendMessage(message);
 					message = (String) in.readObject();
 					System.out.println(message);
-				}
-				else if(message.equals("2"))
-				{
-					//name
+				} else if (message.equals("2")) {
+					// name
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//empID
+					// empID
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//email
+					// email
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//department
+					// department
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//logon messsage
+					// logon messsage
 					message = (String) in.readObject();
 					System.out.println(message);
 					login = (String) in.readObject();
-				}
-				else if(message.equals("3"))
-				{
-					//appname
+				} else if (message.equals("3")) {
+					// appname
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//date time
+					// date time
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//platform
+					// platform
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//desc
+					// desc
 					message = (String) in.readObject();
 					System.out.println(message);
 					message = console.next();
 					sendMessage(message);
-					//status
+					// status
 					message = (String) in.readObject();
 					String prompt = message;
 					System.out.println(message);
-					//if not correct option
-					do
-					{
+					// if not correct option
+					do {
 						message = console.next();
-						//only show if user enters wrong option
-						if(!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned") && !message.equalsIgnoreCase("Closed"))
+						// only show if user enters wrong option
+						if (!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned")
+								&& !message.equalsIgnoreCase("Closed"))
 							System.out.println(prompt);
-					}while(!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned") && !message.equalsIgnoreCase("Closed"));
+					} while (!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned")
+							&& !message.equalsIgnoreCase("Closed"));
 					sendMessage(message);
+				} else if (message.equals("4")) {
+
+				} else if (message.equals("5")) {
+
+				} else if (message.equals("6")) {
+					String check = (String) in.readObject();
+					int total = Integer.parseInt(check);
+					if (total > 0) {
+						for (int i = 0; i < total; i++) {
+							message = (String) in.readObject();
+							System.out.println(message);
+						}
+					}
 				}
 				// msg for intro
 				message = (String) in.readObject();
 				System.out.println(message);
-				if(login.equals("1"))
-				{
+				if (login.equals("1")) {
 					message = (String) in.readObject();
 					System.out.println(message);
 				}
