@@ -53,6 +53,7 @@ public class Client {
 			message = console.next();
 			sendMessage(message);
 			while (true) {
+
 				// msg from choice
 				if (message.equals("1")) {
 					// name
@@ -78,6 +79,8 @@ public class Client {
 					message = (String) in.readObject();
 					System.out.println(message);
 				} else if (message.equals("2")) {
+					//sign user out
+					login = "0";
 					// name
 					message = (String) in.readObject();
 					System.out.println(message);
@@ -102,7 +105,8 @@ public class Client {
 					message = (String) in.readObject();
 					System.out.println(message);
 					login = (String) in.readObject();
-				} else if (message.equals("3")) {
+				} else if (message.equals("3") & login.equals("1")) {
+					System.out.println(login);
 					// appname
 					message = (String) in.readObject();
 					System.out.println(message);
@@ -137,7 +141,7 @@ public class Client {
 					} while (!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned")
 							&& !message.equalsIgnoreCase("Closed"));
 					sendMessage(message);
-				} else if (message.equals("4")) {
+				} else if (message.equals("4")  && login.equals("1")){
 					// bug id
 					message = (String) in.readObject();
 					System.out.println(message);
@@ -150,12 +154,10 @@ public class Client {
 					System.out.println(message);
 					String empId = console.next();
 					sendMessage(empId);
-					message = (String) in.readObject();
-					System.out.println(message);
 
-				} else if (message.equals("5")) {
+				} else if (message.equals("5")  && login.equals("1")) {
 
-				} else if (message.equals("6")) {
+				} else if (message.equals("6")  && login.equals("1")) {
 					message = (String) in.readObject();
 					if (!message.equalsIgnoreCase("no bugs in file")) {
 						String check = message;

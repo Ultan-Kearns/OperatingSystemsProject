@@ -163,6 +163,7 @@ class Connecthandler extends Thread {
 		System.out.println(line);
 		// if file is null
 		if (line == null) {
+			br.close();
 			sendMessage("NO USERS FOUND PLEASE REGISTER");
 			return "0";
 		}
@@ -174,6 +175,7 @@ class Connecthandler extends Thread {
 			line = br.readLine();
 		}
 		sendMessage("Info incorrect");
+		br.close();
 		return "0";
 	}
 
@@ -183,6 +185,7 @@ class Connecthandler extends Thread {
 		Scanner scan = new Scanner(userFile);
 		// if file is null
 		if (scan.hasNext() == false) {
+			scan.close();
 			return "1";
 		}
 		while (scan.hasNext() != false) {
@@ -196,6 +199,7 @@ class Connecthandler extends Thread {
 			scan.nextLine();
 
 		}
+		scan.close();
 		return "1";
 	}
 
@@ -204,8 +208,8 @@ class Connecthandler extends Thread {
 		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
 		BufferedReader br = new BufferedReader(new FileReader(bugFile));
 		int counter = 0;
-		String line = br.readLine();
-		if (line == null) {
+		String line = "";
+		if (br.readLine() == null) {
 			sendMessage("No bugs in file");
 		} else {
 			while (line != null) {
@@ -228,8 +232,40 @@ class Connecthandler extends Thread {
 		System.out.println("COUNTER: " + counter);
 		return counter;
 	}
+	public synchronized void assignDev(String id, String empId) throws IOException {
+		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+		Scanner scan = new Scanner(bugFile);
+		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile), true);
+		String bugNo = null;
+		String appName, dateTime, platform, description, status;
+		// if file is null
+		if (!scan.hasNext()) {
+			System.out.println("IN if");
+			sendMessage("No bugs to assign to");
+		}
+		while (scan.hasNext()) {
+			bugNo = scan.next();
+			scan.next();
+			appName = scan.next();
+			dateTime = scan.next();
+			platform = scan.next();
+			description = scan.next();
+			status = scan.next();
+			System.out.println(bugNo);
+			if (id.equals(bugNo)) {
+			 System.out.println("IN IF");
+			 status = "assigned";
+			 fw.println(bugNo + " " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
+			 sendMessage("Assigned");
+			}
+			scan.nextLine();
 
-	public synchronized void run() {
+		}
+		scan.close();
+		fw.close();
+	}
+
+	public void run() {
 
 		try {
 			out = new ObjectOutputStream(individualconnection.getOutputStream());
@@ -261,7 +297,13 @@ class Connecthandler extends Thread {
 				}
 				else if(message.equals("4"))
 				{
-					
+					sendMessage("Enter bug ID to assign to developer: ");
+					String id; 
+					id = (String) in.readObject();
+					sendMessage("Enter employee ID to assign to developer: ");
+					String empId;
+					empId = (String) in.readObject();
+					assignDev(id,empId);
 				}
 				else if(message.equals("5"))
 				{
