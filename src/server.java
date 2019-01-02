@@ -170,6 +170,7 @@ class Connecthandler extends Thread {
 		while (line != null) {
 			if (line.equals(check)) {
 				sendMessage("logged in");
+				br.close();
 				return "1";
 			}
 			line = br.readLine();
@@ -233,19 +234,14 @@ class Connecthandler extends Thread {
 		return counter;
 	}
 	public synchronized void assignDev(String id, String empId) throws IOException {
+		//for some reason this overwrites file
 		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
-		Scanner scan = new Scanner(bugFile);
-		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile), true);
+		Scanner scan = new Scanner(new BufferedReader(new FileReader(bugFile)));
+		PrintWriter fw = new PrintWriter(new FileWriter(bugFile), true);
 		String bugNo = null;
 		String appName, dateTime, platform, description, status;
-		// if file is null
-		if (!scan.hasNext()) {
-			System.out.println("IN if");
-			sendMessage("No bugs to assign to");
-		}
-		while (scan.hasNext()) {
+		while (scan.hasNextLine()) {
 			bugNo = scan.next();
-			scan.next();
 			appName = scan.next();
 			dateTime = scan.next();
 			platform = scan.next();
@@ -256,7 +252,7 @@ class Connecthandler extends Thread {
 			 System.out.println("IN IF");
 			 status = "assigned";
 			 fw.println(bugNo + " " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
-			 sendMessage("Assigned");
+			 System.out.println("ASSIGNED");
 			}
 			scan.nextLine();
 
@@ -264,8 +260,37 @@ class Connecthandler extends Thread {
 		scan.close();
 		fw.close();
 	}
-
-	public void run() {
+	public synchronized int showUnassigned() throws IOException {
+		//gotta get this only printing out unassigned
+		System.out.println("In READ");
+		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+		BufferedReader br = new BufferedReader(new FileReader(bugFile));
+		int counter = 0;
+		String line = "";
+		if (br.readLine() == null) {
+			sendMessage("No bugs in file");
+		} else {
+			while (line != null) {
+				line = br.readLine();
+				counter += 1; 
+			}
+			String check = Integer.toString(counter);
+			sendMessage(check);
+		}	
+		br.close();
+		br = new BufferedReader(new FileReader(bugFile));
+		if(counter > 0) {
+			for(int i = 0; i < counter; i++)
+			{
+				line = br.readLine();
+				sendMessage(line);
+			}
+		}
+		br.close();
+		System.out.println("COUNTER: " + counter);
+		return counter;
+	}
+	public synchronized void run() {
 
 		try {
 			out = new ObjectOutputStream(individualconnection.getOutputStream());
@@ -292,24 +317,24 @@ class Connecthandler extends Thread {
 					login = login(name, empId, email, department);
 					System.out.println(login);
 					sendMessage(login);
-				} else if (message.equals("3")) {
+				} else if (message.equals("3") && login.equals("1")) {
 					registerBug();
 				}
-				else if(message.equals("4"))
+				else if(message.equals("4") && login.equals("1"))
 				{
 					sendMessage("Enter bug ID to assign to developer: ");
-					String id; 
+					String id;
 					id = (String) in.readObject();
 					sendMessage("Enter employee ID to assign to developer: ");
 					String empId;
 					empId = (String) in.readObject();
-					assignDev(id,empId);
+		 
 				}
-				else if(message.equals("5"))
+				else if(message.equals("5") && login.equals("1"))
 				{
 					
 				}
-				else if(message.equals("6"))
+				else if(message.equals("6") && login.equals("1"))
 				{
 					readBugFile();
 				}
