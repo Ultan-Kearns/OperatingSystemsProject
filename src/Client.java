@@ -154,7 +154,9 @@ public class Client {
 					System.out.println(message);
 					String empId = console.next();
 					sendMessage(empId);
-
+					//output
+					message = (String) in.readObject();
+					System.out.println(message);
 				} else if (message.equals("5")  && login.equals("1")) {
 
 				} else if (message.equals("6")  && login.equals("1")) {
