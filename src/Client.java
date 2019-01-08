@@ -27,7 +27,7 @@ public class Client {
 		port = console.nextInt();
 	}
 
-	public void sendMessage(String msg) {
+	public synchronized void sendMessage(String msg) {
 		try {
 			out.writeObject(msg);
 			out.flush();
@@ -79,7 +79,7 @@ public class Client {
 					message = (String) in.readObject();
 					System.out.println(message);
 				} else if (message.equals("2")) {
-					//sign user out
+					// sign user out
 					login = "0";
 					// name
 					message = (String) in.readObject();
@@ -120,7 +120,15 @@ public class Client {
 					// platform
 					message = (String) in.readObject();
 					System.out.println(message);
-					message = console.next();
+					String promptPlatform = message;
+					do {
+						message = console.next();
+						// only show if user enters wrong option
+						if (!message.equalsIgnoreCase("Windows") && !message.equalsIgnoreCase("Mac")
+								&& !message.equalsIgnoreCase("Linux"))
+							System.out.println(promptPlatform);
+					} while (!message.equalsIgnoreCase("Windows") && !message.equalsIgnoreCase("Mac")
+							&& !message.equalsIgnoreCase("Linux"));
 					sendMessage(message);
 					// desc
 					message = (String) in.readObject();
@@ -141,7 +149,7 @@ public class Client {
 					} while (!message.equalsIgnoreCase("Open") && !message.equalsIgnoreCase("Assigned")
 							&& !message.equalsIgnoreCase("Closed"));
 					sendMessage(message);
-				} else if (message.equals("4")  && login.equals("1")){
+				} else if (message.equals("4") && login.equals("1")) {
 					// bug id
 					message = (String) in.readObject();
 					System.out.println(message);
@@ -154,12 +162,23 @@ public class Client {
 					System.out.println(message);
 					String empId = console.next();
 					sendMessage(empId);
-					//output
+					// output
 					message = (String) in.readObject();
 					System.out.println(message);
-				} else if (message.equals("5")  && login.equals("1")) {
-
-				} else if (message.equals("6")  && login.equals("1")) {
+				} else if (message.equals("5") && login.equals("1")) {
+					message = (String) in.readObject();
+					if (!message.equalsIgnoreCase("no bugs in file")) {
+						String count = message;
+						int counter = Integer.parseInt(count);
+						System.out.println(counter);
+						for (int i = 0; i < counter; i++) {
+							message = (String) in.readObject();
+							System.out.println(message);
+						}
+					} else {
+						System.out.println(message);
+					}
+				} else if (message.equals("6") && login.equals("1")) {
 					message = (String) in.readObject();
 					if (!message.equalsIgnoreCase("no bugs in file")) {
 						String check = message;

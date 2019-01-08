@@ -50,6 +50,7 @@ class Connecthandler extends Thread {
 	ObjectOutputStream out;
 	ObjectInputStream in;
 	String message;
+
 	public Connecthandler(Socket s, int i) {
 		individualconnection = s;
 		socketid = i;
@@ -65,9 +66,9 @@ class Connecthandler extends Thread {
 		}
 	}
 
-	public synchronized void writeUserFile(String name, String empId, String email, String department)
+	public synchronized void writeUserFile(String name, String empId, String email, String department, File f)
 			throws IOException {
-		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
+		File userFile = f;
 		// buffered reader caused issur
 		BufferedReader br = new BufferedReader(new FileReader(userFile));
 		String line = br.readLine();
@@ -90,9 +91,8 @@ class Connecthandler extends Thread {
 	}
 
 	public synchronized void writeBugFile(String appName, String dateTime, String platform, String description,
-			String status) throws IOException {
-		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
-		// buffered reader caused issur
+			String status, File f) throws IOException {
+		File bugFile = f;
 		BufferedReader br = new BufferedReader(new FileReader(bugFile));
 		int counter = 0;
 		String line = br.readLine();
@@ -118,7 +118,8 @@ class Connecthandler extends Thread {
 		br.close();
 	}
 
-	public synchronized void registerUser() throws ClassNotFoundException, IOException {
+	public void registerUser() throws ClassNotFoundException, IOException {
+		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
 		String name, employeeId, email, department;
 		// check to if user file created;
 		sendMessage("Please enter name: ");
@@ -130,18 +131,19 @@ class Connecthandler extends Thread {
 		sendMessage("Please enter Department: ");
 		department = (String) in.readObject();
 		System.out.println(name + " " + employeeId + " " + email + " " + department);
-		String unique = userUnique(employeeId, email);
+		String unique = userUnique(employeeId, email, userFile);
 		System.out.println(unique);
 		if (unique.equals("0")) {
 			sendMessage("User not created Email and ID must be unique");
 		} else {
 			sendMessage("Unique ID + email detected writing user to file");
-			writeUserFile(name, employeeId, email, department);
+			writeUserFile(name, employeeId, email, department, userFile);
 		}
 	}
 
-	public synchronized void registerBug() throws ClassNotFoundException, IOException {
+	public void registerBug() throws ClassNotFoundException, IOException {
 		String appName, dateTime, platform, description, status;
+		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
 		sendMessage("Please enter application name: ");
 		appName = (String) in.readObject();
 		sendMessage("Please enter date time: ");
@@ -152,10 +154,11 @@ class Connecthandler extends Thread {
 		description = (String) in.readObject();
 		sendMessage("Please enter status: ");
 		status = (String) in.readObject();
-		writeBugFile(appName, dateTime, platform, description, status);
+		status = status.toLowerCase();
+		writeBugFile(appName, dateTime, platform, description, status, bugFile);
 	}
 
-	public synchronized String login(String name, String empId, String email, String department) throws IOException {
+	public String login(String name, String empId, String email, String department) throws IOException {
 		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
 		BufferedReader br = new BufferedReader(new FileReader(userFile));
 		String line = br.readLine();
@@ -180,9 +183,9 @@ class Connecthandler extends Thread {
 		return "0";
 	}
 
-	public synchronized String userUnique(String empId, String email) throws IOException {
+	public synchronized String userUnique(String empId, String email, File f) throws IOException {
 		String user, empUnique, emailUnique, dept;
-		File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
+		File userFile = f;
 		Scanner scan = new Scanner(userFile);
 		// if file is null
 		if (scan.hasNext() == false) {
@@ -204,27 +207,27 @@ class Connecthandler extends Thread {
 		return "1";
 	}
 
-	public synchronized int readBugFile() throws IOException {
+	public synchronized int readBugFile(File f) throws IOException {
 		System.out.println("In READ");
-		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+		File bugFile = f;
 		BufferedReader br = new BufferedReader(new FileReader(bugFile));
 		int counter = 0;
 		String line = "";
+		// if null
 		if (br.readLine() == null) {
 			sendMessage("No bugs in file");
 		} else {
 			while (line != null) {
 				line = br.readLine();
-				counter += 1; 
+				counter += 1;
 			}
 			String check = Integer.toString(counter);
 			sendMessage(check);
-		}	
+		}
 		br.close();
 		br = new BufferedReader(new FileReader(bugFile));
-		if(counter > 0) {
-			for(int i = 0; i < counter; i++)
-			{
+		if (counter > 0) {
+			for (int i = 0; i < counter; i++) {
 				line = br.readLine();
 				sendMessage(line);
 			}
@@ -233,70 +236,77 @@ class Connecthandler extends Thread {
 		System.out.println("COUNTER: " + counter);
 		return counter;
 	}
-	public synchronized void assignDev(String id, String empId) throws IOException {
-		//for some reason this overwrites file
-		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
-		Scanner scan = new Scanner(new BufferedReader(new FileReader(bugFile)));
-		PrintWriter fw = new PrintWriter(new FileWriter(bugFile), true);
-		String bugNo = null;
-		String appName, dateTime, platform, description, status;
-		while (scan.hasNextLine()) {
-			bugNo = scan.next();
-			appName = scan.next();
-			dateTime = scan.next();
-			platform = scan.next();
-			description = scan.next();
-			status = scan.next();
-			System.out.println(bugNo);
-			if (id.equals(bugNo)) {
-			 System.out.println("IN IF");
-			 status = "assigned";
-			 fw.println(bugNo + " " + appName + " " + dateTime + " " + platform + " " + description + " " + status);
-			 System.out.println("ASSIGNED");
-			}
-			scan.nextLine();
 
+	public synchronized void assignDev(String id, String empId, File f) throws IOException {
+		File bugFile = f;
+		// buffered reader caused issur
+		BufferedReader br = new BufferedReader(new FileReader(bugFile));
+		String line;
+		PrintWriter fw = new PrintWriter(new FileOutputStream(bugFile), true);
+		if ((line = br.readLine()) == null) {
+			sendMessage("No bugs in file");
+
+		} else {
+			line = "";
+			line = br.readLine();
+			while (line != null) {
+				if (line.startsWith(id)) {
+					fw.println(line + " " + empId);
+					sendMessage("Added");
+				} else {
+					fw.println(line);
+				}
+				line = br.readLine();
+			}
 		}
-		scan.close();
+		br.close();
 		fw.close();
 	}
-	public synchronized int showUnassigned() throws IOException {
-		//gotta get this only printing out unassigned
-		System.out.println("In READ");
-		File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
-		BufferedReader br = new BufferedReader(new FileReader(bugFile));
+
+	public synchronized int showUnassigned(File f) throws IOException {
+		System.out.println("In READ UNASSIGNED");
+		BufferedReader br = new BufferedReader(new FileReader(f));
 		int counter = 0;
 		String line = "";
-		if (br.readLine() == null) {
+		if ((line = br.readLine()) == null) {
 			sendMessage("No bugs in file");
 		} else {
 			while (line != null) {
+				if (line.endsWith("open")) {
+					counter += 1;
+				}
 				line = br.readLine();
-				counter += 1; 
 			}
 			String check = Integer.toString(counter);
 			sendMessage(check);
-		}	
+			System.out.println(counter);
+		}
 		br.close();
-		br = new BufferedReader(new FileReader(bugFile));
-		if(counter > 0) {
-			for(int i = 0; i < counter; i++)
-			{
+		// feed back to user
+		br = new BufferedReader(new FileReader(f));
+		if (counter > 0) {
+			line = br.readLine();
+			System.out.println("IN");
+			while (line != null) {
+				if (line.endsWith("open")) {
+					sendMessage(line);
+				}
 				line = br.readLine();
-				sendMessage(line);
 			}
 		}
 		br.close();
-		System.out.println("COUNTER: " + counter);
 		return counter;
 	}
-	public synchronized void run() {
+
+	public void run() {
 
 		try {
 			out = new ObjectOutputStream(individualconnection.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(individualconnection.getInputStream());
 			String login = "";
+			File bugFile = new File("C:\\Users\\G00343745\\Desktop\\bugs.txt");
+			File userFile = new File("C:\\Users\\G00343745\\Desktop\\users.txt");
 			System.out.println("Connection" + socketid + " from IP address " + individualconnection.getInetAddress());
 			sendMessage("Press 1 for register\npress 2 for login");
 			message = (String) in.readObject();
@@ -319,28 +329,20 @@ class Connecthandler extends Thread {
 					sendMessage(login);
 				} else if (message.equals("3") && login.equals("1")) {
 					registerBug();
-				}
-				else if(message.equals("4") && login.equals("1"))
-				{
+				} else if (message.equals("4") && login.equals("1")) {
 					sendMessage("Enter bug ID to assign to developer: ");
 					String id;
 					id = (String) in.readObject();
 					sendMessage("Enter employee ID to assign to developer: ");
 					String empId;
 					empId = (String) in.readObject();
-		 
-				}
-				else if(message.equals("5") && login.equals("1"))
-				{
-					
-				}
-				else if(message.equals("6") && login.equals("1"))
-				{
-					readBugFile();
-				}
-				else if(message.equals("7"))
-				{
-					
+					assignDev(id, empId, bugFile);
+				} else if (message.equals("5") && login.equals("1")) {
+					showUnassigned(bugFile);
+				} else if (message.equals("6") && login.equals("1")) {
+					readBugFile(bugFile);
+				} else if (message.equals("7")) {
+
 				}
 				sendMessage("Press 1 for register\npress 2 for login");
 				// set login in class getLogin?
@@ -348,7 +350,7 @@ class Connecthandler extends Thread {
 					sendMessage(
 							"Press 3 for add bug report\nPress 4 for assign bug report\npress 5 to view all unassigned bugs\npress 6 to view all bugs in system\npress 7 to update bug info");
 				}
-			  message = (String) in.readObject();
+				message = (String) in.readObject();
 			}
 		}
 
